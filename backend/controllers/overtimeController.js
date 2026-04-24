@@ -1,39 +1,42 @@
 import Overtime from '../models/Overtime.js';
 import Attendance from '../models/Attendance.js';
+import User from '../models/User.js';
+import logger from '../utils/logger.js';
 
-// 🔹Employee Request OT
+// 🔹 REQUEST OT
 export const requestOT = async (req, res) => {
   try {
-    const { date, hours, reason } = req.body;
+    const { date, requestedHours, reason } = req.body;
 
-    if (!date || !hours) {
-      return res.status(400).json({ message: "Date and hours required" });
+    if (!date || !requestedHours || !reason) {
+      return res.status(400).json({ message: "All fields required" });
     }
 
-    if (hours <= 0) {
-      return res.status(400).json({ message: "Invalid OT hours" });
+    if (requestedHours <= 0) {
+      return res.status(400).json({ message: "Invalid hours" });
     }
 
     const existing = await Overtime.findOne({
-      user: req.user.id,
+      user: req.user._id,
       date
     });
 
     if (existing) {
-      return res.status(400).json({ message: "OT already requested" });
+      return res.status(400).json({ message: "Already requested" });
     }
 
     const ot = await Overtime.create({
-      user: req.user.id,
+      user: req.user._id,
       date,
-      hours,
+      requestedHours,
       reason
     });
 
-    res.json(ot);
+    res.status(201).json({ success: true, data: ot });
 
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    logger.error(error.message);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -47,7 +50,7 @@ export const updateOT = async (req, res) => {
       return res.status(400).json({ message: "Invalid status" });
     }
 
-    const ot = await Overtime.findById(req.params.id);
+    const ot = await Overtime.findById(req.params.id).populate('user');
 
     if (!ot) {
       return res.status(404).json({ message: "OT not found" });
@@ -62,41 +65,90 @@ export const updateOT = async (req, res) => {
       return res.status(403).json({ message: "Not allowed" });
     }
 
+    // 🔥 Manager team check
+    if (
+      req.user.role === 'manager' &&
+      ot.user.manager?.toString() !== req.user._id.toString()
+    ) {
+      return res.status(403).json({ message: "Not your team" });
+    }
+
     ot.status = status;
+    ot.approvedBy = req.user._id;
     await ot.save();
 
-    // 🔥 Update attendance if approved
+    // 🔥 UPDATE ATTENDANCE
     if (status === 'Approved') {
       const attendance = await Attendance.findOne({
-        user: ot.user,
+        user: ot.user._id,
         date: ot.date
       });
 
-      if (!attendance) {
-        return res.status(404).json({ message: "Attendance not found" });
+      if (attendance) {
+        attendance.overtimeHours = ot.requestedHours;
+        await attendance.save();
       }
-
-      attendance.overtimeHours = ot.hours;
-      await attendance.save();
     }
 
-    res.json({
-      message: `OT ${status}`,
-      ot
-    });
+    res.json({ success: true, data: ot });
 
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    logger.error(error.message);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
-
-// 🔹 Get all OT
+// 🔹 GET ALL OT (with filters)
 export const getAllOT = async (req, res) => {
   try {
-    const data = await Overtime.find().populate('user');
-    res.json(data);
+    const { status, startDate, endDate } = req.query;
+
+    let query = {};
+
+    // 🔐 ROLE-BASED ACCESS
+    if (req.user.role === 'employee') {
+      query.user = req.user._id;
+    }
+
+    if (req.user.role === 'manager') {
+      const team = await User.find({ manager: req.user._id }).select('_id');
+
+      const teamIds = team.map(u => u._id);
+      teamIds.push(req.user._id);
+
+      query.user = { $in: teamIds };
+    }
+
+    // 👑 ADMIN → no restriction
+
+    // 📊 STATUS FILTER
+    if (status) {
+      query.status = status;
+    }
+
+    // 📅 DATE FILTER
+    if (startDate && endDate) {
+      query.date = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate)
+      };
+    }
+
+    const data = await Overtime.find(query)
+      .populate('user', 'name email role')
+      .populate('approvedBy', 'name')
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      count: data.length,
+      data
+    });
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 };

@@ -3,19 +3,36 @@ import mongoose from 'mongoose';
 const overtimeSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'User',
+    required: true
   },
 
-  date: String,
+  date: {
+    type: Date,
+    required: true
+  },
 
-  hours: Number,
+  requestedHours: {
+    type: Number,
+    required: true,
+    min: 1
+  },
 
-  reason: String,
+  reason: {
+    type: String,
+    required: true
+  },
 
   status: {
     type: String,
-    enum: ['Pending', 'Approved', 'Rejected'],
+    enum: ['Pending', 'Approved', 'Rejected'], // ✅ fixed
     default: 'Pending'
+  },
+
+  approvedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
   }
 
 }, { timestamps: true });

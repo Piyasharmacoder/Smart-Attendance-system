@@ -10,21 +10,21 @@ import {
 
 const router = express.Router();
 
-// Employee request
-router.post('/request', protect, requestOT);
+// 🔹 Employee request OT
+router.post('/request', protect, authorize('employee'), requestOT);
 
-// Manager/Admin approve
+// 🔹 View OT (ALL ROLES)
+router.get('/',
+  protect,
+  authorize('employee', 'manager', 'admin'),
+  getAllOT
+);
+
+// 🔹 Approve / Reject OT
 router.put('/:id',
   protect,
   authorize('manager', 'admin'),
   updateOT
-);
-
-// Manager/Admin view
-router.get('/',
-  protect,
-  authorize('manager', 'admin'),
-  getAllOT
 );
 
 export default router;

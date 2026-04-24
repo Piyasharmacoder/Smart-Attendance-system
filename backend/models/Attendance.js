@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 const attendanceSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 
-  date: { type: String, required: true },
+  date: { type: Date, required: true },
 
   punchIn: {
     time: Date,
@@ -20,7 +20,7 @@ const attendanceSchema = new mongoose.Schema({
   },
 
   workingHours: Number,
-  
+
   status: {
     type: String,
     enum: ['Completed', 'Incomplete'],
