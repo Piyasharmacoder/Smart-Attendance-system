@@ -11,7 +11,7 @@ import {
 const router = express.Router();
 
 // Employee Dashboard
-router.get('/employee', protect, getMyDashboard);
+router.get('/employee', protect, authorize('employee'), getMyDashboard);
 
 // Manager Dashboard
 router.get('/manager', protect, authorize('manager', 'admin'), getTeamAttendance);

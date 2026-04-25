@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: 'http://localhost:5000/api', // TODO: change to env variable later
+  baseUrl: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
   prepareHeaders: (headers, { getState }) => {
     const token = getState().auth.token;
     if (token) {
@@ -29,12 +29,21 @@ export const apiSlice = createApi({
     // 1.  'register' endpoint 
     register: builder.mutation({
       query: (data) => ({
-        url: '/auth/register', // Check karein aapka backend URL yahi hai na
+        url: '/auth/register',
         method: 'POST',
         body: data,
       }),
     }),
+
+    getUsers: builder.query({
+      query: () => '/auth/users',
+      providesTags: ['User'],
+    }),
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation } = apiSlice;
+export const {
+  useLoginMutation,
+  useRegisterMutation,
+  useGetUsersQuery,
+} = apiSlice;

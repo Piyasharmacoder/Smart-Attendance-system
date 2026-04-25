@@ -3,6 +3,16 @@ import Attendance from '../models/Attendance.js';
 import User from '../models/User.js';
 import logger from '../utils/logger.js';
 
+const getDayRange = (dateValue) => {
+  const start = new Date(dateValue);
+  start.setHours(0, 0, 0, 0);
+
+  const end = new Date(dateValue);
+  end.setHours(23, 59, 59, 999);
+
+  return { start, end };
+};
+
 // 🔹 REQUEST OT
 export const requestOT = async (req, res) => {
   try {
@@ -16,9 +26,11 @@ export const requestOT = async (req, res) => {
       return res.status(400).json({ message: "Invalid hours" });
     }
 
+    const { start, end } = getDayRange(date);
+
     const existing = await Overtime.findOne({
       user: req.user._id,
-      date
+      date: { $gte: start, $lte: end }
     });
 
     if (existing) {
@@ -27,7 +39,7 @@ export const requestOT = async (req, res) => {
 
     const ot = await Overtime.create({
       user: req.user._id,
-      date,
+      date: new Date(date),
       requestedHours,
       reason
     });
@@ -79,9 +91,10 @@ export const updateOT = async (req, res) => {
 
     // 🔥 UPDATE ATTENDANCE
     if (status === 'Approved') {
+      const { start, end } = getDayRange(ot.date);
       const attendance = await Attendance.findOne({
         user: ot.user._id,
-        date: ot.date
+        date: { $gte: start, $lte: end }
       });
 
       if (attendance) {

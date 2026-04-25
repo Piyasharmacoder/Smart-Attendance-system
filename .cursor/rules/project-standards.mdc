@@ -1,0 +1,30 @@
+---
+description: Smart attendance project-wide coding and safety standards
+alwaysApply: true
+---
+
+# Smart Attendance Project Rules
+
+## Understand before changing
+- Read related route/controller/model (backend) or page/api/store (frontend) before editing.
+- Follow existing folder boundaries: `backend` for API/data, `frontend` for UI/state.
+- Keep changes small and targeted; avoid broad refactors unless requested.
+
+## Backend conventions (Node + Express + MongoDB)
+- Keep route handlers thin; business logic belongs in controllers and shared utils.
+- Preserve API prefix style (`/api/<resource>`) and existing middleware flow.
+- Return consistent JSON shapes with clear `success`/`message` semantics.
+- Use `async/await` with `try/catch`; log useful context via logger and avoid silent failures.
+- Never expose secrets or password hashes in responses or logs.
+
+## Frontend conventions (React + Redux Toolkit + RTK Query)
+- Prefer functional components and hooks; keep components focused and reusable.
+- Add API calls in RTK Query files and keep auth token header behavior intact.
+- Keep API base URL configurable via environment variables (no new hardcoded hosts).
+- Preserve current app structure: pages/layout/components + `app/store` + `api/*`.
+
+## Quality and safety
+- Do not commit `.env` or credentials; use `.env.example` style documentation when needed.
+- Reuse existing dependencies/patterns before introducing new libraries.
+- Run relevant checks after edits (`frontend` lint/build, backend run sanity) when feasible.
+- If behavior is uncertain, prefer adding lightweight guards and clear error messages.

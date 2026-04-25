@@ -17,11 +17,18 @@ export const register = async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
+    const requestedRole = role?.toLowerCase();
+    if (requestedRole && requestedRole !== 'employee') {
+      return res.status(403).json({
+        message: "Only employee signup is allowed"
+      });
+    }
+
     const user = await User.create({
       name,
       email,
       password,
-      role: role || 'employee',
+      role: 'employee',
       manager: managerId || null
     });
 

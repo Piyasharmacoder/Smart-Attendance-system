@@ -6,7 +6,7 @@ import { applyLeave, updateLeave } from '../controllers/leaveController.js';
 const router = express.Router();
 
 // Employee apply leave
-router.post('/apply', protect, applyLeave);
+router.post('/apply', protect, authorize('employee'), applyLeave);
 
 // Manager + Admin approve/reject
 router.put('/:id', protect, authorize('manager', 'admin'), updateLeave);

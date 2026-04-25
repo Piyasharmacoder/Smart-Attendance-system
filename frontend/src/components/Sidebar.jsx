@@ -8,6 +8,7 @@ export default function Sidebar() {
     { name: "Dashboard", path: "/dashboard", icon: "🏠" },
     { name: "Attendance", path: "/attendance", icon: "⏱️" },
     { name: "Reports", path: "/reports", icon: "📊" },
+    { name: "Overtime", path: "/overtime", icon: "⚡" },
   ];
 
   if (userInfo?.role === "manager") menu.push({ name: "Team", path: "/team", icon: "👥" });
@@ -76,13 +77,11 @@ export default function Sidebar() {
       </div>
 
       {/* 👤 NEXT-LEVEL USER PROFILE CARD */}
-      <div className="mt-auto relative">
-        {/* Decorative Light Glow */}
+      {/* <div className="mt-auto relative">
         <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-32 bg-emerald-100/30 rounded-full blur-3xl pointer-events-none"></div>
 
         <div className="relative bg-white border border-slate-100 rounded-[2rem] p-5 shadow-2xl shadow-emerald-100/50">
           <div className="flex flex-col items-center text-center">
-            {/* Avatar with Ring */}
             <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-emerald-50 to-white p-1 mb-3 shadow-sm border border-emerald-100">
               <div className="w-full h-full rounded-[1.2rem] bg-emerald-500 flex items-center justify-center text-white text-xl font-black shadow-inner">
                 {userInfo?.name?.charAt(0).toUpperCase()}
@@ -103,7 +102,7 @@ export default function Sidebar() {
             </button>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

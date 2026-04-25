@@ -1,6 +1,11 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
+import Attendance from "./pages/Attendance";
+import Reports from "./pages/Reports";
+import Overtime from "./pages/Overtime";
+import Team from "./pages/Team";
+import Users from "./pages/Users";
 
 // 🔐 Protected Route Component
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -34,8 +39,7 @@ export default function App() {
           element={
             <ProtectedRoute>
               <MainLayout>
-                {/* Yahan apna Attendance component daalein */}
-                <div className="text-white text-2xl font-bold">Attendance Page Coming Soon...</div>
+                <Attendance />
               </MainLayout>
             </ProtectedRoute>
           }
@@ -47,8 +51,40 @@ export default function App() {
           element={
             <ProtectedRoute>
               <MainLayout>
-                {/* Yahan apna Reports component daalein */}
-                <div className="text-white text-2xl font-bold">Reports Page Coming Soon...</div>
+                <Reports />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/overtime"
+          element={
+            <ProtectedRoute allowedRoles={["employee", "manager", "admin"]}>
+              <MainLayout>
+                <Overtime />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/team"
+          element={
+            <ProtectedRoute allowedRoles={["manager", "admin"]}>
+              <MainLayout>
+                <Team />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/users"
+          element={
+            <ProtectedRoute allowedRoles={["admin", "manager"]}>
+              <MainLayout>
+                <Users />
               </MainLayout>
             </ProtectedRoute>
           }

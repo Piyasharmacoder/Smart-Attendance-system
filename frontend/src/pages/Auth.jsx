@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { useLoginMutation, useRegisterMutation } from "../api/apiSlice";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "../app/authSlice";
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
-    role: "employee",
   });
 
   const [showPass, setShowPass] = useState(false);
@@ -29,13 +31,14 @@ export default function Auth() {
       if (isLogin) {
         res = await login({ email: form.email, password: form.password }).unwrap();
       } else {
-        res = await register(form).unwrap();
+        res = await register({
+          name: form.name,
+          email: form.email,
+          password: form.password,
+        }).unwrap();
       }
 
-      localStorage.setItem("token", res.token);
-      localStorage.setItem("user", JSON.stringify(res.user));
-      
-      // Smooth navigation instead of window.location
+      dispatch(setCredentials({ user: res.user, token: res.token }));
       navigate("/dashboard");
     } catch (err) {
       alert(err?.data?.message || "Authentication Failed");
@@ -148,21 +151,6 @@ export default function Auth() {
                   </button>
                 </div>
               </div>
-
-              {!isLogin && (
-                <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-500 uppercase ml-1">Your Role</label>
-                  <select
-                    name="role"
-                    onChange={handleChange}
-                    className="w-full p-4 rounded-2xl bg-slate-50 border border-slate-100 outline-none focus:border-emerald-400 focus:bg-white transition-all text-slate-700 font-bold appearance-none cursor-pointer"
-                  >
-                    <option value="employee">Employee</option>
-                    <option value="manager">Manager</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                </div>
-              )}
 
               <button
                 type="submit"

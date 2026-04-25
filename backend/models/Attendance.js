@@ -16,7 +16,8 @@ const attendanceSchema = new mongoose.Schema({
   punchOut: {
     time: Date,
     location: { lat: Number, lng: Number },
-    selfie: String
+    selfie: String,
+    geoStatus: { type: String, enum: ['IN_RANGE', 'OUT_OF_RANGE'] }
   },
 
   workingHours: Number,

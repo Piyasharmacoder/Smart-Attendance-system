@@ -1,14 +1,12 @@
 import { useSelector } from "react-redux";
 import { useGetDashboardQuery } from "../api/dashboardApi";
-import { usePunchInMutation, usePunchOutMutation } from "../api/attendanceApi";
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const { userInfo } = useSelector((state) => state.auth);
-  const { data, isLoading } = useGetDashboardQuery(userInfo?.role, { skip: !userInfo });
+  const { data } = useGetDashboardQuery(userInfo?.role, { skip: !userInfo });
   const summary = data?.summary || {};
-
-  const [punchIn, { isLoading: punchingIn }] = usePunchInMutation();
-  const [punchOut, { isLoading: punchingOut }] = usePunchOutMutation();
 
   return (
     <div className="min-h-screen p-4 md:p-8 bg-gradient-to-br from-green-50 to-white text-slate-800">
@@ -26,13 +24,13 @@ export default function Dashboard() {
 
         <div className="flex gap-4">
           <button
-            onClick={() => {/* PunchIn Logic */}}
+            onClick={() => navigate("/attendance")}
             className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-2xl font-bold shadow-lg shadow-green-200 transition-all hover:-translate-y-1 active:scale-95"
           >
             <span>📍</span> Punch In
           </button>
           <button
-            onClick={() => {/* PunchOut Logic */}}
+            onClick={() => navigate("/attendance")}
             className="flex items-center gap-2 bg-white border-2 border-red-100 text-red-500 hover:bg-red-50 px-8 py-3 rounded-2xl font-bold transition-all hover:-translate-y-1 active:scale-95"
           >
             <span>👋</span> Punch Out

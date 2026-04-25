@@ -29,7 +29,7 @@ export const getReport = async (req, res) => {
       const teamIds = team.map(u => u._id);
       teamIds.push(req.user._id);
 
-      if (userId && teamIds.includes(userId)) {
+      if (userId && teamIds.some(id => id.toString() === userId)) {
         filter.user = userId;
       } else {
         filter.user = { $in: teamIds };

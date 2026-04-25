@@ -108,7 +108,13 @@ export const getTeamAttendance = async (req, res) => {
       sort = 'desc'
     } = req.query;
 
-    const filter = {};
+    const team = await User.find({ manager: req.user._id }).select('_id');
+    const teamIds = team.map(u => u._id);
+    teamIds.push(req.user._id);
+
+    const filter = {
+      user: { $in: teamIds }
+    };
 
     // 📅 Date filter
     if (startDate && endDate) {
@@ -117,6 +123,10 @@ export const getTeamAttendance = async (req, res) => {
 
     // 👤 Specific employee
     if (employeeId) {
+      const isAllowedUser = teamIds.some(id => id.toString() === employeeId);
+      if (!isAllowedUser) {
+        return res.status(403).json({ message: "Not your team member" });
+      }
       filter.user = employeeId;
     }
 
@@ -182,7 +192,7 @@ export const getTeamAttendance = async (req, res) => {
 
       if (d.overtimeHours > 0) overtimeCount++;
 
-      if (d.date === today) {
+      if (d.date && new Date(d.date).toISOString().split("T")[0] === today) {
         presentUsers.add(uid);
       }
     });
@@ -259,7 +269,7 @@ export const getAdminDashboard = async (req, res) => {
         let totalAttendance = attendance.length;
         let totalHours = 0;
         let overtimeCount = 0;
-        let presentToday = 0;
+        const presentTodayUsers = new Set();
 
         const today = new Date().toISOString().split("T")[0];
 
@@ -268,7 +278,14 @@ export const getAdminDashboard = async (req, res) => {
 
             if (d.overtimeHours > 0) overtimeCount++;
 
-            if (d.date === today) presentToday++;
+            const uid = d.user?._id?.toString();
+            if (
+              uid &&
+              d.date &&
+              new Date(d.date).toISOString().split("T")[0] === today
+            ) {
+              presentTodayUsers.add(uid);
+            }
         });
 
 
@@ -285,7 +302,7 @@ export const getAdminDashboard = async (req, res) => {
             totalAttendance,
             totalHours,
             overtimeCount,
-            presentToday,
+            presentToday: presentTodayUsers.size,
             totalLeaves,
             approvedLeaves,
             pendingLeaves

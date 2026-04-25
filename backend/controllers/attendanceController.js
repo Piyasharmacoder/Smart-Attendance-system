@@ -5,8 +5,8 @@ import { isWithinRadius } from '../utils/geofence.js';
 import User from '../models/User.js';
 
 // Office location
-const OFFICE_LAT = 22.7196;
-const OFFICE_LNG = 75.8577;
+const OFFICE_LAT = 22.673989;
+const OFFICE_LNG = 75.877022;
 
 // global function to get today's date range
 const getTodayRange = () => {
@@ -21,12 +21,17 @@ const getTodayRange = () => {
 
 // 🔹 Punch In
 export const punchIn = async (req, res) => {
+  console.log("call puch  in ");
+  
   try {
     const { lat, lng, selfie } = req.body;
+    const parsedLat = Number(lat);
+    const parsedLng = Number(lng);
+    
     // ✅ VALIDATION 
     if (
-      lat === undefined ||
-      lng === undefined ||
+      !Number.isFinite(parsedLat) ||
+      !Number.isFinite(parsedLng) ||
       !selfie
     ) {
       return res.status(400).json({ message: "Location and selfie required" });
@@ -45,18 +50,14 @@ export const punchIn = async (req, res) => {
     }
 
     // 🔥 Geofence check
-    const inRange = isWithinRadius(lat, lng, OFFICE_LAT, OFFICE_LNG);
-
-    if (!inRange) {
-      return res.status(400).json({ message: "Not within office radius" });
-    }
+    const inRange = isWithinRadius(parsedLat, parsedLng, OFFICE_LAT, OFFICE_LNG);
 
     const attendance = await Attendance.create({
       user: req.user._id,
       date: new Date(),
       punchIn: {
         time: new Date(),
-        location: { lat, lng },
+        location: { lat: parsedLat, lng: parsedLng },
         selfie,
         geoStatus: inRange ? "IN_RANGE" : "OUT_OF_RANGE"
 
@@ -79,11 +80,13 @@ export const punchIn = async (req, res) => {
 export const punchOut = async (req, res) => {
   try {
     const { lat, lng, selfie } = req.body;
+    const parsedLat = Number(lat);
+    const parsedLng = Number(lng);
 
     // ✅ VALIDATION 
     if (
-      lat === undefined ||
-      lng === undefined ||
+      !Number.isFinite(parsedLat) ||
+      !Number.isFinite(parsedLng) ||
       !selfie
     ) {
       return res.status(400).json({ message: "Location and selfie required" });
@@ -117,11 +120,11 @@ export const punchOut = async (req, res) => {
     }
 
     // 📍 Geo check
-    const inRange = isWithinRadius(lat, lng, OFFICE_LAT, OFFICE_LNG);
+    const inRange = isWithinRadius(parsedLat, parsedLng, OFFICE_LAT, OFFICE_LNG);
 
     attendance.punchOut = {
       time: punchOutTime,
-      location: { lat, lng },
+      location: { lat: parsedLat, lng: parsedLng },
       selfie,
       geoStatus: inRange ? "IN_RANGE" : "OUT_OF_RANGE"
     };
