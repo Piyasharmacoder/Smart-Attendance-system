@@ -39,6 +39,34 @@ export const apiSlice = createApi({
       query: () => '/auth/users',
       providesTags: ['User'],
     }),
+
+    getManagers: builder.query({
+      query: () => '/auth/managers',
+      providesTags: ['User'],
+    }),
+
+    getUserDetails: builder.query({
+      query: (id) => `/auth/users/${id}/details`,
+      providesTags: ['User', 'Attendance'],
+    }),
+
+    updateUser: builder.mutation({
+      query: ({ id, payload }) => ({
+        url: `/auth/users/${id}`,
+        method: 'PUT',
+        body: payload,
+      }),
+      invalidatesTags: ['User', 'Attendance'],
+    }),
+
+    createUser: builder.mutation({
+      query: (payload) => ({
+        url: '/users',
+        method: 'POST',
+        body: payload,
+      }),
+      invalidatesTags: ['User'],
+    }),
   }),
 });
 
@@ -46,4 +74,8 @@ export const {
   useLoginMutation,
   useRegisterMutation,
   useGetUsersQuery,
+  useGetManagersQuery,
+  useGetUserDetailsQuery,
+  useUpdateUserMutation,
+  useCreateUserMutation,
 } = apiSlice;

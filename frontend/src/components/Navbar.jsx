@@ -2,6 +2,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../app/authSlice";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  Bell,
+  ChevronDown,
+  CircleUserRound,
+  LogOut,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
 
 export default function Navbar() {
   const dispatch = useDispatch();
@@ -15,94 +23,106 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/70 backdrop-blur-md border-b border-green-50 px-4 md:px-8 py-3 flex justify-between items-center shadow-sm">
-      
-      {/* 🟢 LEFT: LOGO */}
-      <div className="flex items-center gap-2 group cursor-pointer">
-        <div className="bg-green-600 p-2 rounded-xl group-hover:rotate-12 transition-transform duration-300">
-          <span className="text-xl">🚀</span>
-        </div>
-        <h1 className="text-xl font-black bg-gradient-to-r from-green-700 to-teal-600 bg-clip-text text-transparent tracking-tight">
-          DTable
-        </h1>
-      </div>
-
-      {/* 🟢 RIGHT: USER ACTIONS */}
-      <div className="relative flex items-center gap-3 md:gap-5">
-        
-        {/* ROLE BADGE - Hidden on very small screens */}
-        <span className="hidden sm:inline-block text-[10px] font-bold bg-green-100 text-green-700 px-3 py-1 rounded-full uppercase tracking-widest border border-green-200">
-          {userInfo?.role || "Employee"}
-        </span>
-
-        {/* USER INFO (Desktop Only) */}
-        <div className="hidden md:flex flex-col items-end">
-          <span className="text-slate-800 font-bold text-sm leading-tight">
-            {userInfo?.name}
-          </span>
-          <span className="text-slate-400 text-[11px] font-medium">
-            Online
-          </span>
+    <nav className="sticky top-0 z-50 border-b border-emerald-100/70 bg-gradient-to-r from-emerald-50 via-white to-green-50 px-4 py-3 backdrop-blur-xl md:px-7">
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-slate-500">
+            <Sparkles className="h-3.5 w-3.5 text-emerald-600" />
+            Smart Attendance
+          </p>
+          <h1 className="truncate text-sm font-bold text-slate-800 md:text-base">
+            Welcome back, {userInfo?.name || "User"}
+          </h1>
         </div>
 
-        {/* AVATAR WRAPPER */}
-        <div 
-          onClick={() => setOpen(!open)}
-          className="relative cursor-pointer group"
-        >
-          <div className="w-10 h-10 md:w-11 md:h-11 rounded-2xl bg-gradient-to-tr from-green-500 to-emerald-400 p-[2px] shadow-lg shadow-green-100 group-hover:scale-105 transition-all">
-            <div className="w-full h-full bg-white rounded-[14px] flex items-center justify-center overflow-hidden">
-              <span className="text-green-600 font-black text-lg">
-                {userInfo?.name?.charAt(0).toUpperCase()}
+        <div className="relative flex items-center gap-2 md:gap-4">
+          <span className="hidden items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50/90 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-emerald-700 shadow-sm shadow-emerald-100 sm:inline-flex">
+            <ShieldCheck className="h-3.5 w-3.5" />
+            {userInfo?.role || "Employee"}
+          </span>
+
+          <button
+            type="button"
+            className="relative hidden rounded-xl border border-emerald-100 bg-white/90 p-2 text-slate-500 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-emerald-50/70 hover:text-emerald-700 hover:shadow-md md:inline-flex"
+          >
+            <Bell className="h-4 w-4" />
+            <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-emerald-500" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setOpen((prev) => !prev)}
+            className="group flex items-center gap-2 rounded-2xl border border-emerald-100 bg-white/95 px-2 py-1.5 shadow-sm shadow-emerald-100/50 transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-200 hover:bg-white hover:shadow-md md:px-3"
+          >
+            <span className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-sm font-black text-white">
+              {userInfo?.name?.charAt(0).toUpperCase() || "U"}
+              <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white bg-emerald-500" />
+            </span>
+            <span className="hidden text-left md:block">
+              <span className="block max-w-32 truncate text-sm font-semibold text-slate-800">
+                {userInfo?.name}
               </span>
-            </div>
-          </div>
-          {/* Status Indicator */}
-          <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+              <span className="block text-[11px] font-medium text-slate-500">Online</span>
+            </span>
+            <ChevronDown
+                className={`h-4 w-4 text-slate-400 transition duration-200 group-hover:text-emerald-600 ${
+                open ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+
+          {open && (
+            <>
+              <button
+                type="button"
+                className="fixed inset-0 z-[-1] cursor-default"
+                onClick={() => setOpen(false)}
+                aria-label="Close user menu overlay"
+              />
+
+              <div className="absolute right-0 top-14 w-72 rounded-3xl border border-emerald-100 bg-white/95 p-4 shadow-2xl shadow-emerald-200/40 backdrop-blur">
+                <div className="mb-3 flex items-center gap-3 rounded-2xl bg-gradient-to-r from-emerald-50 to-white p-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-600 to-teal-500 text-sm font-bold text-white">
+                    {userInfo?.name?.charAt(0).toUpperCase() || "U"}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-bold text-slate-800">{userInfo?.name}</p>
+                    <p className="truncate text-xs text-slate-500">{userInfo?.email}</p>
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <button
+                    type="button"
+                    className="flex w-full items-center gap-2 rounded-xl p-3 text-sm font-medium text-slate-600 transition-all duration-200 hover:translate-x-1 hover:bg-emerald-50/70 hover:text-emerald-700"
+                  >
+                    <CircleUserRound className="h-4 w-4" />
+                    Profile Settings
+                  </button>
+                  <button
+                    type="button"
+                    className="flex w-full items-center gap-2 rounded-xl p-3 text-sm font-medium text-slate-600 transition-all duration-200 hover:translate-x-1 hover:bg-emerald-50/70 hover:text-emerald-700"
+                  >
+                    <Sparkles className="h-4 w-4" />
+                    My Stats
+                  </button>
+
+                  <div className="my-2 h-px bg-slate-100" />
+
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="flex w-full items-center gap-2 rounded-xl p-3 text-sm font-semibold text-red-500 transition-all duration-200 hover:translate-x-1 hover:bg-red-50"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Logout
+                    <span className="ml-auto text-base">→</span>
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
-
-        {/* 🟢 NEXT-LEVEL DROPDOWN */}
-        {open && (
-          <>
-            {/* Overlay to close dropdown on click outside */}
-            <div className="fixed inset-0 z-[-1]" onClick={() => setOpen(false)}></div>
-            
-            <div className="absolute right-0 top-14 w-64 bg-white rounded-3xl shadow-2xl shadow-green-200/50 border border-green-50 p-4 animate-in fade-in zoom-in duration-200 origin-top-right">
-              
-              {/* User Identity */}
-              <div className="flex items-center gap-3 p-2 mb-3 bg-green-50/50 rounded-2xl">
-                <div className="w-10 h-10 rounded-xl bg-green-600 flex items-center justify-center text-white font-bold">
-                   {userInfo?.name?.charAt(0)}
-                </div>
-                <div className="overflow-hidden">
-                  <p className="text-sm font-bold text-slate-800 truncate">{userInfo?.name}</p>
-                  <p className="text-xs text-slate-500 truncate">{userInfo?.email}</p>
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <button className="w-full flex items-center gap-3 text-sm font-medium text-slate-600 hover:bg-slate-50 p-3 rounded-xl transition-colors">
-                  <span>👤</span> Profile Settings
-                </button>
-                <button className="w-full flex items-center gap-3 text-sm font-medium text-slate-600 hover:bg-slate-50 p-3 rounded-xl transition-colors">
-                  <span>📊</span> My Stats
-                </button>
-                
-                <div className="h-[1px] bg-slate-100 my-2 mx-2"></div>
-
-                <button
-                  onClick={handleLogout}
-                  className="w-full flex items-center gap-3 text-sm font-bold text-red-500 hover:bg-red-50 p-3 rounded-xl transition-colors"
-                >
-                  <span>Logout</span> 
-                  <span className="ml-auto">→</span>
-                </button>
-              </div>
-
-            </div>
-          </>
-        )}
-
       </div>
     </nav>
   );

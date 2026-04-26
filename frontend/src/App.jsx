@@ -6,6 +6,9 @@ import Reports from "./pages/Reports";
 import Overtime from "./pages/Overtime";
 import Team from "./pages/Team";
 import Users from "./pages/Users";
+import UserDetails from "./pages/UserDetails";
+import EditUser from "./pages/EditUser";
+import AddUser from "./pages/AddUser";
 
 // 🔐 Protected Route Component
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -85,6 +88,37 @@ export default function App() {
             <ProtectedRoute allowedRoles={["admin", "manager"]}>
               <MainLayout>
                 <Users />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        /><Route
+          path="/users/add"
+          element={
+            <ProtectedRoute allowedRoles={["admin", "manager"]}>
+              <MainLayout>
+                <AddUser />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/users/:id"
+          element={
+            <ProtectedRoute allowedRoles={["admin", "manager"]}>
+              <MainLayout>
+                <UserDetails />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/users/:id/edit"
+          element={
+            <ProtectedRoute allowedRoles={["admin", "manager"]}>
+              <MainLayout>
+                <EditUser />
               </MainLayout>
             </ProtectedRoute>
           }

@@ -1,7 +1,9 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useGetUsersQuery } from "../api/apiSlice";
 
 export default function Users() {
+  const navigate = useNavigate();
   const { data, isLoading } = useGetUsersQuery();
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
@@ -71,10 +73,20 @@ export default function Users() {
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
-        <h1 className="text-2xl font-bold text-slate-800">User Management Console</h1>
-        <p className="text-slate-500 mt-1">
-          Monitor users, roles, and access distribution in one place.
-        </p>
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-800">User Management Console</h1>
+            <p className="text-slate-500 mt-1">
+              Monitor users, roles, and access distribution in one place.
+            </p>
+          </div>
+          <button
+            onClick={() => navigate("/users/add")}
+            className="px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition"
+          >
+            Add User
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -157,6 +169,8 @@ export default function Users() {
             users={paginatedUsers}
             getRoleBadge={getRoleBadge}
             getStatus={getStatus}
+            onView={(user) => navigate(`/users/${user._id}`)}
+            onEdit={(user) => navigate(`/users/${user._id}/edit`)}
             onToggleStatus={toggleStatus}
             onDelete={deleteUser}
           />
@@ -196,6 +210,18 @@ export default function Users() {
                   <p className="truncate">
                     <span className="font-semibold text-slate-600">User ID:</span> {user._id}
                   </p>
+                </div>
+                <div className="mt-4 flex justify-end">
+                  <ActionButton
+                    title="Edit"
+                    icon="edit"
+                    onClick={() => navigate(`/users/${user._id}/edit`)}
+                  />
+                  <ActionButton
+                    title="View"
+                    icon="eye"
+                    onClick={() => navigate(`/users/${user._id}`)}
+                  />
                 </div>
               </div>
             ))}
@@ -243,7 +269,7 @@ function StatCard({ title, value, color }) {
   );
 }
 
-function UsersTable({ users, getRoleBadge, getStatus, onToggleStatus, onDelete }) {
+function UsersTable({ users, getRoleBadge, getStatus, onView, onEdit, onToggleStatus, onDelete }) {
   return (
     <div className="overflow-x-auto rounded-2xl border border-slate-100">
       <table className="min-w-[860px] w-full text-sm">
@@ -288,14 +314,14 @@ function UsersTable({ users, getRoleBadge, getStatus, onToggleStatus, onDelete }
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <ActionButton label="View" icon="eye" onClick={() => window.alert(`Viewing ${user.name}`)} />
-                    <ActionButton label="Edit" icon="edit" onClick={() => window.alert(`Editing ${user.name}`)} />
-                    <ActionButton
+                    <ActionButton label="View" icon="eye" onClick={() => onView(user)} />
+                    <ActionButton label="Edit" icon="edit" onClick={() => onEdit(user)} />
+                    {/* <ActionButton
                       label={isActive ? "Deactivate" : "Activate"}
                       icon={isActive ? "pause" : "play"}
                       onClick={() => onToggleStatus(user)}
                     />
-                    <ActionButton label="Delete" icon="trash" danger onClick={() => onDelete(user)} />
+                    <ActionButton label="Delete" icon="trash" danger onClick={() => onDelete(user)} /> */}
                   </div>
                 </td>
               </tr>
@@ -307,7 +333,7 @@ function UsersTable({ users, getRoleBadge, getStatus, onToggleStatus, onDelete }
   );
 }
 
-function ActionButton({ label, onClick, icon, danger = false }) {
+function ActionButton({ title, onClick, icon, danger = false }) {
   return (
     <button
       onClick={onClick}
@@ -318,7 +344,7 @@ function ActionButton({ label, onClick, icon, danger = false }) {
       }`}
     >
       <Icon name={icon} />
-      {label}
+      {title}
     </button>
   );
 }

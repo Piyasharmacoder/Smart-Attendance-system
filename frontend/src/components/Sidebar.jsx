@@ -1,108 +1,155 @@
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
+import {
+  LayoutDashboard,
+  Clock,
+  BarChart3,
+  Zap,
+  Users,
+  Shield,
+} from "lucide-react";
 
 export default function Sidebar() {
   const { userInfo } = useSelector((state) => state.auth);
 
   const menu = [
-    { name: "Dashboard", path: "/dashboard", icon: "🏠" },
-    { name: "Attendance", path: "/attendance", icon: "⏱️" },
-    { name: "Reports", path: "/reports", icon: "📊" },
-    { name: "Overtime", path: "/overtime", icon: "⚡" },
+    { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
+    { name: "Attendance", path: "/attendance", icon: Clock },
+    { name: "Reports", path: "/reports", icon: BarChart3 },
+    { name: "Overtime", path: "/overtime", icon: Zap },
   ];
 
-  if (userInfo?.role === "manager") menu.push({ name: "Team", path: "/team", icon: "👥" });
-  if (userInfo?.role === "admin") menu.push({ name: "Users", path: "/users", icon: "🛡️" });
+  if (userInfo?.role === "manager")
+    menu.push({ name: "Team", path: "/team", icon: Users });
+
+  if (userInfo?.role === "admin")
+    menu.push({ name: "Users", path: "/users", icon: Shield });
 
   return (
-    <div className="w-72 h-screen bg-white border-r border-slate-100 p-6 hidden md:flex flex-col relative">
-      
-      {/* 🚀 PREMIUM BRANDING */}
-      <div className="flex items-center gap-3 mb-12 px-2">
-        <div className="w-11 h-11 bg-gradient-to-tr from-emerald-400 to-green-500 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-100 transform -rotate-3">
-          <span className="text-xl text-white">🚀</span>
-        </div>
-        <div>
-          <h2 className="text-xl font-black text-slate-800 tracking-tighter leading-none">
-            DTable
-          </h2>
-          <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Workspace</span>
-        </div>
-      </div>
+    <aside className="w-72 h-screen hidden md:flex flex-col 
+      bg-gradient-to-b from-white via-emerald-50/40 to-white 
+      border-r border-emerald-100/60 
+      backdrop-blur-xl 
+      p-6 transition-all duration-300">
 
-      {/* 📂 NAVIGATION SECTION */}
-      <div className="flex-1 space-y-8">
+{/* 🚀 BRAND */}
+<div className="group flex items-center gap-3 mb-10 px-3 py-2 rounded-xl 
+  transition-all duration-300 hover:bg-white/60 backdrop-blur-md 
+  hover:shadow-lg hover:shadow-emerald-100 cursor-pointer">
+
+  {/* ICON */}
+  <div className="relative w-12 h-12 flex items-center justify-center">
+    
+    {/* Glow */}
+    <div className="absolute inset-0 bg-gradient-to-tr from-emerald-400 to-green-500 
+      rounded-2xl blur-md opacity-40 group-hover:opacity-70 transition"></div>
+
+    {/* Main Icon */}
+    <div className="relative w-11 h-11 bg-gradient-to-tr from-emerald-400 to-green-500 
+      rounded-2xl flex items-center justify-center shadow-md 
+      shadow-emerald-200/50 transition-transform duration-700 
+      group-hover:rotate-[360deg]">
+
+      <span className="text-white text-lg font-bold tracking-wide">
+        D
+      </span>
+    </div>
+  </div>
+
+  {/* TEXT */}
+  <div className="leading-tight">
+    <h2 className="text-lg font-extrabold tracking-tight 
+      text-[#0A7775] transition-all duration-300 
+      group-hover:text-emerald-600">
+      DTable
+    </h2>
+
+    <span className="text-[10px] font-bold uppercase tracking-widest 
+      text-[#0A7775] transition-all duration-300 
+      group-hover:text-emerald-400 group-hover:tracking-[0.2em]">
+      Workspace
+    </span>
+  </div>
+
+</div>
+
+      {/* MENU */}
+      <div className="flex-1 space-y-6">
         <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-5 px-4">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-4 px-3">
             Main Menu
           </p>
-          
-          <nav className="space-y-1">
-            {menu.map((item, i) => (
-              <NavLink
-                key={i}
-                to={item.path}
-                className={({ isActive }) =>
-                  `flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 group relative ${
-                    isActive
-                      ? "bg-gradient-to-r from-emerald-50 to-green-50 text-emerald-700"
-                      : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
-                  }`
-                }
-              >
-                {({ isActive }) => (
-                  <>
-                    {/* Active Bar Indicator */}
-                    {isActive && (
-                      <div className="absolute left-0 w-1.5 h-6 bg-emerald-500 rounded-r-full" />
-                    )}
-                    
-                    <span className={`text-xl transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`}>
-                      {item.icon}
-                    </span>
-                    
-                    <span className={`text-[14px] ${isActive ? 'font-bold' : 'font-medium'}`}>
-                      {item.name}
-                    </span>
 
-                    {isActive && (
-                      <div className="ml-auto flex h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981]" />
-                    )}
-                  </>
-                )}
-              </NavLink>
-            ))}
+          <nav className="space-y-1.5">
+            {menu.map((item, i) => {
+              const Icon = item.icon;
+
+              return (
+                <NavLink
+                  key={i}
+                  to={item.path}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-3 py-3 rounded-2xl relative transition-all duration-300 group ${
+                      isActive
+                        ? "bg-gradient-to-r from-emerald-50 to-green-50 text-emerald-700 shadow-sm"
+                        : "text-slate-500 hover:bg-emerald-50/60 hover:text-slate-900"
+                    }`
+                  }
+                >
+                  {({ isActive }) => (
+                    <>
+                      {/* Active Indicator */}
+                      {isActive && (
+                        <div className="absolute left-0 h-6 w-[3px] bg-emerald-500 rounded-r-full" />
+                      )}
+
+                      {/* Icon */}
+                      <div
+                        className={`p-2 rounded-xl transition-all duration-300 ${
+                          isActive
+                            ? "bg-emerald-100 text-emerald-600"
+                            : "bg-transparent group-hover:bg-emerald-100/70"
+                        }`}
+                      >
+                        <Icon size={18} />
+                      </div>
+
+                      {/* Text */}
+                      <span
+                        className={`text-sm ${
+                          isActive ? "font-semibold" : "font-medium"
+                        }`}
+                      >
+                        {item.name}
+                      </span>
+
+                      {/* Active Dot */}
+                      {isActive && (
+                        <div className="ml-auto w-2 h-2 bg-emerald-500 rounded-full shadow-[0_0_10px_#10b981]" />
+                      )}
+                    </>
+                  )}
+                </NavLink>
+              );
+            })}
           </nav>
         </div>
       </div>
 
-      {/* 👤 NEXT-LEVEL USER PROFILE CARD */}
-      {/* <div className="mt-auto relative">
-        <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-32 bg-emerald-100/30 rounded-full blur-3xl pointer-events-none"></div>
-
-        <div className="relative bg-white border border-slate-100 rounded-[2rem] p-5 shadow-2xl shadow-emerald-100/50">
-          <div className="flex flex-col items-center text-center">
-            <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-emerald-50 to-white p-1 mb-3 shadow-sm border border-emerald-100">
-              <div className="w-full h-full rounded-[1.2rem] bg-emerald-500 flex items-center justify-center text-white text-xl font-black shadow-inner">
-                {userInfo?.name?.charAt(0).toUpperCase()}
-              </div>
-            </div>
-
-            <div className="mb-4">
-              <p className="text-sm font-black text-slate-800 leading-tight">
-                {userInfo?.name}
-              </p>
-              <span className="inline-block mt-1 px-3 py-0.5 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded-full border border-emerald-100 uppercase tracking-tighter">
-                {userInfo?.role}
-              </span >
-            </div>
-
-            <button className="w-full py-2.5 bg-slate-900 text-white rounded-xl text-[12px] font-bold hover:bg-emerald-600 transition-all shadow-lg shadow-slate-200">
-              Account Settings
-            </button>
-          </div>
+      {/* FOOTER */}
+      <div className="mt-auto pt-6">
+        <div className="rounded-2xl bg-gradient-to-r from-emerald-50 to-green-50 p-4 border border-emerald-100">
+          <p className="text-xs font-semibold text-slate-600">
+            Upgrade your workspace
+          </p>
+          <p className="text-[11px] text-slate-400 mb-2">
+            Get advanced analytics & reports
+          </p>
+          <button className="w-full text-xs font-bold bg-emerald-500 text-white py-2 rounded-xl hover:bg-emerald-600 transition">
+            Upgrade
+          </button>
         </div>
-      </div> */}
-    </div>
+      </div>
+    </aside>
   );
 }

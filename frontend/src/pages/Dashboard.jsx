@@ -7,6 +7,22 @@ export default function Dashboard() {
   const { userInfo } = useSelector((state) => state.auth);
   const { data } = useGetDashboardQuery(userInfo?.role, { skip: !userInfo });
   const summary = data?.summary || {};
+  const weeklyActivity = [
+    { day: "Mon", value: 8.2 },
+    { day: "Tue", value: 7.6 },
+    { day: "Wed", value: 9.1 },
+    { day: "Thu", value: 8.4 },
+    { day: "Fri", value: 8.9 },
+    { day: "Sat", value: 5.4 },
+    { day: "Sun", value: 0 },
+  ];
+  const weekTargetHours = 48;
+  const totalWorkedHours = Number(summary.totalHours || 0);
+  const targetProgress = Math.max(0, Math.min(100, Math.round((totalWorkedHours / weekTargetHours) * 100)));
+  const attendanceRate = Math.max(
+    0,
+    Math.min(100, Math.round(((Number(summary.totalDays) || 0) / 7) * 100))
+  );
 
   return (
     <div className="min-h-screen p-4 md:p-8 bg-gradient-to-br from-green-50 to-white text-slate-800">
@@ -73,11 +89,83 @@ export default function Dashboard() {
       {/* 📉 RECENT ACTIVITY / EXTRA SECTION (Placeholder) */}
       <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 bg-white rounded-3xl p-8 shadow-sm border border-green-50">
-          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+          <h2 className="text-xl font-bold mb-2 flex items-center gap-2">
             <span className="p-2 bg-green-100 rounded-lg">📈</span> Weekly Activity
           </h2>
-          <div className="h-48 flex items-center justify-center border-2 border-dashed border-green-100 rounded-2xl text-slate-400 font-medium">
-            Chart Visualization Area
+          <p className="text-sm text-slate-500 mb-6">
+            Your attendance rhythm and work-hour performance for this week.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className="rounded-2xl border border-emerald-100 bg-emerald-50/60 p-4">
+              <p className="text-xs font-bold uppercase tracking-wide text-emerald-700">Target Completion</p>
+              <div className="mt-3 flex items-end justify-between">
+                <div>
+                  <p className="text-3xl font-black text-slate-800">{targetProgress}%</p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    {totalWorkedHours}h of {weekTargetHours}h target
+                  </p>
+                </div>
+                <span className="text-xs font-bold text-emerald-700 bg-white px-2.5 py-1 rounded-full border border-emerald-100">
+                  +4.2%
+                </span>
+              </div>
+              <div className="mt-3 h-2.5 bg-white rounded-full overflow-hidden border border-emerald-100">
+                <div
+                  className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"
+                  style={{ width: `${targetProgress}%` }}
+                />
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-sky-100 bg-sky-50/50 p-4">
+              <p className="text-xs font-bold uppercase tracking-wide text-sky-700">Attendance Rate</p>
+              <div className="mt-3 flex items-end justify-between">
+                <div>
+                  <p className="text-3xl font-black text-slate-800">{attendanceRate}%</p>
+                  <p className="text-xs text-slate-500 mt-1">Based on present days this week</p>
+                </div>
+                <span className="text-xs font-bold text-sky-700 bg-white px-2.5 py-1 rounded-full border border-sky-100">
+                  Stable
+                </span>
+              </div>
+              <div className="mt-3 h-2.5 bg-white rounded-full overflow-hidden border border-sky-100">
+                <div
+                  className="h-full bg-gradient-to-r from-sky-500 to-cyan-500 rounded-full"
+                  style={{ width: `${attendanceRate}%` }}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-slate-100 p-4 bg-gradient-to-b from-white to-slate-50/50">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm font-semibold text-slate-700">Day-wise Work Hours</p>
+              <p className="text-xs text-slate-500">Avg goal: 8h/day</p>
+            </div>
+
+            <div className="flex items-end justify-between gap-3 h-44">
+              {weeklyActivity.map((item) => {
+                const height = Math.max(8, Math.round((item.value / 10) * 100));
+                const isWeekend = item.day === "Sat" || item.day === "Sun";
+                return (
+                  <div key={item.day} className="flex-1 min-w-0 flex flex-col items-center gap-2">
+                    <span className="text-[11px] font-bold text-slate-500">{item.value}h</span>
+                    <div className="w-full max-w-[34px] h-28 bg-slate-100 rounded-xl flex items-end p-1">
+                      <div
+                        className={`w-full rounded-lg transition-all duration-300 ${
+                          isWeekend
+                            ? "bg-gradient-to-t from-slate-400 to-slate-300"
+                            : "bg-gradient-to-t from-emerald-500 to-teal-400"
+                        }`}
+                        style={{ height: `${height}%` }}
+                      />
+                    </div>
+                    <span className="text-xs font-semibold text-slate-600">{item.day}</span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
 

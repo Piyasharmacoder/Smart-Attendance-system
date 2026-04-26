@@ -89,19 +89,35 @@ export const updateOT = async (req, res) => {
     ot.approvedBy = req.user._id;
     await ot.save();
 
-    // 🔥 UPDATE ATTENDANCE
-    if (status === 'Approved') {
-      const { start, end } = getDayRange(ot.date);
-      const attendance = await Attendance.findOne({
-        user: ot.user._id,
-        date: { $gte: start, $lte: end }
-      });
+    // 🔥 SYNC ATTENDANCE (status + overtime metadata)
+    const { start, end } = getDayRange(ot.date);
+    let attendance = await Attendance.findOne({
+      user: ot.user._id,
+      date: { $gte: start, $lte: end }
+    });
 
-      if (attendance) {
-        attendance.overtimeHours = ot.requestedHours;
-        await attendance.save();
-      }
+    if (!attendance) {
+      attendance = await Attendance.create({
+        user: ot.user._id,
+        date: new Date(ot.date)
+      });
     }
+
+    if (status === 'Approved') {
+      attendance.overtimeHours = ot.requestedHours;
+      attendance.overtimeApproved = true;
+
+      // If total effective hours reaches threshold, mark complete.
+      const workingHours = Number(attendance.workingHours || 0);
+      if ((workingHours + Number(ot.requestedHours)) >= 8) {
+        attendance.status = 'Completed';
+      }
+    } else {
+      attendance.overtimeHours = 0;
+      attendance.overtimeApproved = false;
+    }
+
+    await attendance.save();
 
     res.json({ success: true, data: ot });
 

@@ -15,7 +15,22 @@ export const overtimeApi = apiSlice.injectEndpoints({
 
     // 🔹 Get OT
     getOvertimeRequests: builder.query({
-      query: () => '/overtime',
+      query: (params = {}) => {
+        const searchParams = new URLSearchParams();
+
+        if (params.status && params.status !== "All") {
+          searchParams.append("status", params.status);
+        }
+        if (params.startDate) {
+          searchParams.append("startDate", params.startDate);
+        }
+        if (params.endDate) {
+          searchParams.append("endDate", params.endDate);
+        }
+
+        const queryString = searchParams.toString();
+        return queryString ? `/overtime?${queryString}` : "/overtime";
+      },
       providesTags: ['Overtime'],
     }),
 
