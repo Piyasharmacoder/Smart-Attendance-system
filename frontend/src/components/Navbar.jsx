@@ -99,13 +99,6 @@ export default function Navbar() {
                     <CircleUserRound className="h-4 w-4" />
                     Profile Settings
                   </button>
-                  <button
-                    type="button"
-                    className="flex w-full items-center gap-2 rounded-xl p-3 text-sm font-medium text-slate-600 transition-all duration-200 hover:translate-x-1 hover:bg-emerald-50/70 hover:text-emerald-700"
-                  >
-                    <Sparkles className="h-4 w-4" />
-                    My Stats
-                  </button>
 
                   <div className="my-2 h-px bg-slate-100" />
 
